@@ -27,7 +27,7 @@ namespace GildedRoseTests
         public void NoRegressionTest()
         {
             var goldenMaster = new GildedRoseGoldenMaster(_goodEnougthItemCollectionToCoverAllPathes.List1.ToList());
-            var sut = new GildedRose(_goodEnougthItemCollectionToCoverAllPathes.List2.ToList());
+            var sut = new GildedRose.GildedRose(_goodEnougthItemCollectionToCoverAllPathes.List2.ToList());
 
             for (var i = 0; i < 7; i++)
             {

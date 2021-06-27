@@ -1,90 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GildedRoseKata;
 
-namespace GildedRoseKata
+namespace GildedRose
 {
-public class GildedRose
+    public class GildedRose
     {
-        IList<Item> Items;
-        public GildedRose(IList<Item> Items)
+        private const string BackstagePassesToATafkal80EtcConcert = "Backstage passes to a TAFKAL80ETC concert";
+        private const string SulfurasHandOfRagnaros = "Sulfuras, Hand of Ragnaros";
+        private const string AgedBrie = "Aged Brie";
+        private readonly IList<Item> _items;
+
+        public GildedRose(IList<Item> items)
         {
-            this.Items = Items;
+            _items = items;
         }
 
         public void UpdateQuality()
         {
-            for (var i = 0; i < Items.Count; i++)
+            foreach (var t in _items)
             {
-                if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                {
-                    if (Items[i].Quality > 0)
-                    {
-                        if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                        {
-                            Items[i].Quality = Items[i].Quality - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (Items[i].Quality < 50)
-                    {
-                        Items[i].Quality = Items[i].Quality + 1;
+                if (t.Name == SulfurasHandOfRagnaros)
+                    continue;
 
-                        if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
-                        {
-                            if (Items[i].SellIn < 11)
-                            {
-                                if (Items[i].Quality < 50)
-                                {
-                                    Items[i].Quality = Items[i].Quality + 1;
-                                }
-                            }
+                ANewDay(t);
 
-                            if (Items[i].SellIn < 6)
-                            {
-                                if (Items[i].Quality < 50)
-                                {
-                                    Items[i].Quality = Items[i].Quality + 1;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
+                switch (t.Name)
                 {
-                    Items[i].SellIn = Items[i].SellIn - 1;
-                }
-
-                if (Items[i].SellIn < 0)
-                {
-                    if (Items[i].Name != "Aged Brie")
-                    {
-                        if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                        {
-                            if (Items[i].Quality > 0)
-                            {
-                                if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                                {
-                                    Items[i].Quality = Items[i].Quality - 1;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Items[i].Quality = Items[i].Quality - Items[i].Quality;
-                        }
-                    }
-                    else
-                    {
-                        if (Items[i].Quality < 50)
-                        {
-                            Items[i].Quality = Items[i].Quality + 1;
-                        }
-                    }
+                    case AgedBrie:
+                        UpdateAgedBrie(t);
+                        break;
+                    case BackstagePassesToATafkal80EtcConcert:
+                        UpdateBackStageConcert(t);
+                        break;
+                    default:
+                        UpdateCommonItem(t);
+                        break;
                 }
             }
+        }
+
+        private static void ANewDay(Item t)
+        {
+            t.SellIn--;
+        }
+
+        private static bool IsExpired(Item t)
+        {
+            return t.SellIn < 0;
+        }
+
+        private static void UpdateBackStageConcert(Item t)
+        {
+            if (IsExpired(t))
+            {
+                t.Quality = 0;
+                return;
+            }
+
+            IncreaseQuality(t);
+            if (t.SellIn < 10) IncreaseQuality(t);
+
+            if (t.SellIn < 5) IncreaseQuality(t);
+        }
+
+        private static void UpdateAgedBrie(Item t)
+        {
+            IncreaseQuality(t);
+            if (IsExpired(t))
+                IncreaseQuality(t);
+        }
+
+        private static void UpdateCommonItem(Item t)
+        {
+            DecreaseQuality(t);
+            if (IsExpired(t)) DecreaseQuality(t);
+        }
+
+        private static void IncreaseQuality(Item t)
+        {
+            if (t.Quality < 50) t.Quality++;
+        }
+
+        private static void DecreaseQuality(Item t)
+        {
+            if (t.Quality > 0) t.Quality--;
         }
     }
 }
